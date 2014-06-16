@@ -34,6 +34,9 @@ private Q_SLOTS:
     void rootChangeWithLeftRotation();
     void rootChangeWithRightRotation();
 
+    void insertOneToSix();
+
+    void printTree();
 
 };
 
@@ -200,16 +203,49 @@ void RtreeTest::rootChangeWithRightRotation()
     int begin = 0;
     int end = 8000;
     Range_Tree rtree(begin, end);
-    rtree.insert(1500, 299);
+    rtree.insert(2500, 250);
     const Range_Tree::Node * r = rtree.root();
-    rtree.insert(1100, 200);
+    rtree.insert(2000, 300);
     QVERIFY(r == rtree.root());
-    rtree.insert(500, 300);
+    rtree.insert(1800, 100);
     QVERIFY(r != rtree.root());
     const Range_Tree::Node * newr = rtree.root();
-    QVERIFY(newr->value() == make_pair(1100, 200));
-    rtree.insert(100, 250);
+    QVERIFY(newr->value() == make_pair(2000, 300));
     QVERIFY(newr == rtree.root());
+    rtree.insert(1500, 299);
+}
+
+void RtreeTest::insertOneToSix()
+{
+    int begin = 0;
+    int end = 8000;
+    Range_Tree rtree(begin, end);
+    rtree.insert(1, 9);
+    rtree.insert(10, 9);
+    rtree.insert(20, 9);
+    rtree.insert(30, 9);
+    rtree.insert(40, 9);
+    rtree.insert(50, 9);
+    rtree.insert(60, 9);
+    QVERIFY(rtree.root()->value().first == 40);
+}
+
+void RtreeTest::printTree()
+{
+    int begin = 0;
+    int end = 8000;
+    Range_Tree rtree(begin, end);
+    rtree.insert(2500, 250);
+    const Range_Tree::Node * r = rtree.root();
+    rtree.insert(2000, 300);
+    QVERIFY(r == rtree.root());
+    rtree.insert(1800, 100);
+    QVERIFY(r != rtree.root());
+    const Range_Tree::Node * newr = rtree.root();
+    QVERIFY(newr->value() == make_pair(2000, 300));
+    QVERIFY(newr == rtree.root());
+    rtree.insert(1500, 299);
+    rtree.print_tree();
 }
 
 QTEST_APPLESS_MAIN(RtreeTest)

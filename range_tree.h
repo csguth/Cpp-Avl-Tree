@@ -14,6 +14,11 @@ using std::numeric_limits;
 
 #include <algorithm>
 using std::max;
+
+#include <iostream>
+using std::cout;
+using std::endl;
+
 class Range_Tree
 {
 public:
@@ -28,8 +33,8 @@ public:
         pair<int, int> _value;
         unsigned _height;
 
-        bool __insert(int value, int width);
-        bool __insert_in_side(int value, int width, Side side);
+        Node *__insert(int value, int width, Node * parent);
+        Node *__insert_in_side(int value, int width, Side side);
         void __update_height();
 
         bool __check(int value, int width);
@@ -41,6 +46,9 @@ public:
         unsigned height() const;
         int balance() const;
         pair<int, int> value() const;
+
+        // debug
+        void print_node(int offset = 0);
     };
 
 private:
@@ -63,6 +71,9 @@ public:
     bool check(int begin, int width);
     unsigned size();
     const Range_Tree::Node * root();
+
+    // DEBUG
+    void print_tree();
 };
 
 #endif // RANGE_TREE_H
