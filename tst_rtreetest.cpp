@@ -10,8 +10,9 @@ class RtreeTest : public QObject
 public:
     RtreeTest();
 
+
 private:
-    Range_Tree createATreeFromZeroToEightK();
+    Range_Tree createTreeFrom0ToEightK();
 
 private Q_SLOTS:
     void createAEmptyTreeWithARange();
@@ -34,9 +35,15 @@ private Q_SLOTS:
     void rootChangeWithLeftRotation();
     void rootChangeWithRightRotation();
 
-    void insertOneToSix();
+    void rootChangeWithDoubleLeftRotation();
+    void rootChangeWithDoubleRightRotation();
 
-    void printTree();
+    void insertZeroToSix();
+    void insertSixDowntoZero();
+
+    void findingAValue();
+
+    void printingATree();
 
 };
 
@@ -44,41 +51,30 @@ RtreeTest::RtreeTest()
 {
 }
 
-
-
-
 void RtreeTest::createAEmptyTreeWithARange()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
-    QVERIFY2(rtree.begin() == begin, "Failure");
-    QVERIFY2(rtree.end() == end, "Failure");
-    QVERIFY2(rtree.empty(), "Failure");
-    QVERIFY(rtree.root() == NULL);
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    QVERIFY(rtree.begin() == 0);
+    QVERIFY(rtree.end() == 8000);
+    QVERIFY(rtree.empty());
+    QVERIFY(rtree._root == NULL);
 }
 
 void RtreeTest::insertAboveRange()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     QVERIFY(!rtree.insert(7800, 300));
 }
 
 void RtreeTest::insertBelowRange()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     QVERIFY(!rtree.insert(-5, 300));
 }
 
 void RtreeTest::insertValidRange()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.insert(100, 300));
     QVERIFY(!rtree.empty());
     QVERIFY(rtree.size() == 1);
@@ -86,9 +82,7 @@ void RtreeTest::insertValidRange()
 
 void RtreeTest::checkNumberOfNodes()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.size() == 0);
     rtree.insert(100, 300);
     QVERIFY(rtree.size() == 1);
@@ -96,19 +90,14 @@ void RtreeTest::checkNumberOfNodes()
 
 void RtreeTest::checkRoot()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    const Range_Tree::Node * root = rtree.root();
-    QVERIFY(root != NULL);
+    QVERIFY(rtree._root != NULL);
 }
 
 void RtreeTest::insertLessThanRootWithoutOverlap()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.insert(50, 10));
     QVERIFY(rtree.size() == 2);
@@ -116,9 +105,7 @@ void RtreeTest::insertLessThanRootWithoutOverlap()
 
 void RtreeTest::insertLessThanRootWithOverlap()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(!rtree.insert(80, 30));
     QVERIFY(rtree.size() != 2);
@@ -126,9 +113,7 @@ void RtreeTest::insertLessThanRootWithOverlap()
 
 void RtreeTest::insertGreatherThanRootWithoutOverlap()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.insert(401, 30));
     QVERIFY(rtree.size() == 2);
@@ -136,9 +121,7 @@ void RtreeTest::insertGreatherThanRootWithoutOverlap()
 
 void RtreeTest::insertGreatherThanRootWithOverlap()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(!rtree.insert(390, 30));
     QVERIFY(rtree.size() != 2);
@@ -146,36 +129,28 @@ void RtreeTest::insertGreatherThanRootWithOverlap()
 
 void RtreeTest::checkIfRangeCanBeInsertedBeforeRoot()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.check(50, 49));
 }
 
 void RtreeTest::checkIfRangeCanBeInsertedAfterRoot()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.check(401, 50));
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedBeforeRoot()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(!rtree.check(50, 100));
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(!rtree.check(390, 50));
 }
@@ -183,70 +158,142 @@ void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 
 void RtreeTest::rootChangeWithLeftRotation()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
-    rtree.insert(1500, 299);
-    const Range_Tree::Node * r = rtree.root();
-    rtree.insert(1800, 100);
-    QVERIFY(r == rtree.root());
-    rtree.insert(2000, 300);
-    QVERIFY(r != rtree.root());
-    const Range_Tree::Node * newr = rtree.root();
-    QVERIFY(newr->value() == make_pair(1800, 100));
-    rtree.insert(2500, 250);
-    QVERIFY(newr == rtree.root());
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(0, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(10, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(20, 9);
+    QVERIFY(rtree.root().first == 10);
+    rtree.insert(30, 9);
+    QVERIFY(rtree.root().first == 10);
 }
 
 void RtreeTest::rootChangeWithRightRotation()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
-    rtree.insert(2500, 250);
-    const Range_Tree::Node * r = rtree.root();
-    rtree.insert(2000, 300);
-    QVERIFY(r == rtree.root());
-    rtree.insert(1800, 100);
-    QVERIFY(r != rtree.root());
-    const Range_Tree::Node * newr = rtree.root();
-    QVERIFY(newr->value() == make_pair(2000, 300));
-    QVERIFY(newr == rtree.root());
-    rtree.insert(1500, 299);
-}
-
-void RtreeTest::insertOneToSix()
-{
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
-    rtree.insert(1, 9);
-    rtree.insert(10, 9);
-    rtree.insert(20, 9);
+    Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(30, 9);
-    rtree.insert(40, 9);
-    rtree.insert(50, 9);
-    rtree.insert(60, 9);
-    QVERIFY(rtree.root()->value().first == 40);
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(20, 9);
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(10, 9);
+    QVERIFY(rtree.root().first == 20);
+    rtree.insert(0, 9);
+    QVERIFY(rtree.root().first == 20);
 }
 
-void RtreeTest::printTree()
+void RtreeTest::rootChangeWithDoubleLeftRotation()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(0, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(20, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(10, 9);
+    QVERIFY(rtree.root().first == 10);
+}
+
+void RtreeTest::rootChangeWithDoubleRightRotation()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.print_tree();
+
+    rtree.insert(30, 9);
+    rtree.print_tree();
+
+
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(10, 9);
+
+    rtree.print_tree();
+
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(20, 9);
+    rtree.print_tree();
+
+    QVERIFY(rtree.root().first == 20);
+
+
+
+}
+
+void RtreeTest::insertZeroToSix()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(0, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(10, 9);
+    QVERIFY(rtree.root().first == 0);
+    rtree.insert(20, 9);
+    QVERIFY(rtree.root().first == 10);
+    rtree.insert(30, 9);
+    QVERIFY(rtree.root().first == 10);
+    rtree.insert(40, 9);
+    QVERIFY(rtree.root().first == 10);
+    rtree.insert(50, 9);
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(60, 9);
+    QVERIFY(rtree.root().first == 30);
+}
+
+Range_Tree RtreeTest::createTreeFrom0ToEightK()
 {
     int begin = 0;
     int end = 8000;
     Range_Tree rtree(begin, end);
-    rtree.insert(2500, 250);
-    const Range_Tree::Node * r = rtree.root();
-    rtree.insert(2000, 300);
-    QVERIFY(r == rtree.root());
-    rtree.insert(1800, 100);
-    QVERIFY(r != rtree.root());
-    const Range_Tree::Node * newr = rtree.root();
-    QVERIFY(newr->value() == make_pair(2000, 300));
-    QVERIFY(newr == rtree.root());
-    rtree.insert(1500, 299);
-    rtree.print_tree();
+    return rtree;
 }
+
+void RtreeTest::insertSixDowntoZero()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(60, 9);
+    QVERIFY(rtree.root().first == 60);
+    rtree.insert(50, 9);
+    QVERIFY(rtree.root().first == 60);
+    rtree.insert(40, 9);
+    QVERIFY(rtree.root().first == 50);
+    rtree.insert(30, 9);
+    QVERIFY(rtree.root().first == 50);
+    rtree.insert(20, 9);
+    QVERIFY(rtree.root().first == 50);
+    rtree.insert(10, 9);
+    QVERIFY(rtree.root().first == 30);
+    rtree.insert(0, 9);
+    QVERIFY(rtree.root().first == 30);
+
+}
+
+void RtreeTest::findingAValue()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(60, 9);
+    rtree.insert(50, 9);
+    rtree.insert(40, 9);
+    rtree.insert(30, 9);
+    rtree.insert(20, 9);
+    rtree.insert(10, 9);
+    rtree.insert(0, 9);
+    QVERIFY(rtree.check(80, 100));
+    QVERIFY(!rtree.check(32, 5));
+}
+
+void RtreeTest::printingATree()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(60, 9);
+    rtree.insert(50, 9);
+    rtree.insert(40, 9);
+    rtree.insert(30, 9);
+    rtree.insert(20, 9);
+    rtree.insert(10, 9);
+    rtree.insert(0, 9);
+
+    rtree.print_tree();
+
+    QVERIFY(true);
+}
+
 
 QTEST_APPLESS_MAIN(RtreeTest)
 

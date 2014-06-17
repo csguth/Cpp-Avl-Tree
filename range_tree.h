@@ -33,26 +33,26 @@ public:
         pair<int, int> _value;
         unsigned _height;
 
-        Node *__insert(int value, int width, Node * parent);
+        Node *__insert(int value, int width, Node *parent);
         Node *__insert_in_side(int value, int width, Side side);
         void __update_height();
 
         bool __check(int value, int width);
-        void __rotate_left(Node * parent);
-        void __rotate_right(Node * parent);
-    public:
+        Range_Tree::Node *  __rotate_left(Node * parent);
+        Range_Tree::Node *  __rotate_left_pre_double_rotate(Node * parent);
+        Range_Tree::Node *  __rotate_right(Node * parent);
+        Range_Tree::Node *  __rotate_right_pre_double_rotate(Node * parent);
+
         Node(int begin, int width);
         virtual ~Node();
-        unsigned height() const;
         int balance() const;
-        pair<int, int> value() const;
 
         // debug
         void print_node(int offset = 0);
     };
 
-private:
-
+public:
+//private:
 
     int _begin;
     int _end;
@@ -70,7 +70,7 @@ public:
     bool insert(int begin, int width);
     bool check(int begin, int width);
     unsigned size();
-    const Range_Tree::Node * root();
+    std::pair<int, unsigned> root();
 
     // DEBUG
     void print_tree();

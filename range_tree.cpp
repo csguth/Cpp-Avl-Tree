@@ -37,7 +37,7 @@ bool Range_Tree::insert(int begin, int width)
         _size = 1;
         return true;
     }
-    Node * root_of_subtree = _root->__insert(begin, width, _root);
+    Node * root_of_subtree = _root->__insert(begin, width, NULL);
     if(root_of_subtree != NULL)
     {
         _root = root_of_subtree;
@@ -59,29 +59,32 @@ unsigned Range_Tree::size()
     return _size;
 }
 
-const Range_Tree::Node *Range_Tree::root()
+std::pair<int, unsigned> Range_Tree::root()
 {
-    return _root;
+    return _root->_value;
 }
 
 void Range_Tree::print_tree()
 {
-    if(_root != NULL)
+    cout << "Tree: " << endl;
+    if(_root == NULL)
+        cout << "NULL" << endl;
+    else
         _root->print_node();
 }
 
 
-Range_Tree::Node *  Range_Tree::Node::__insert(int value, int width, Node *parent)
+Range_Tree::Node *  Range_Tree::Node::__insert(int value, int width, Node * parent)
 {
-    Node * root = parent;
+    Node * root = this;
     if(value > _value.first + _value.second)
     {
         this->__insert_in_side(value, width, RIGHT);
-        this->__update_height();
         if(this->balance() == -2)
         {
-            root = _right;
-            this->__rotate_left(parent);
+            if(_right->balance() > 0)
+                _right->__rotate_right_pre_double_rotate(this);
+            root = this->__rotate_left(parent);
         }
     }
     else if(value > _value.first && value <= _value.first + _value.second)
@@ -89,11 +92,11 @@ Range_Tree::Node *  Range_Tree::Node::__insert(int value, int width, Node *paren
     else if(value + width < _value.first)
     {
         this->__insert_in_side(value, width, LEFT);
-        this->__update_height();
         if(this->balance() == 2)
         {
-            root = _left;
-            this->__rotate_right(parent);
+            if(_left->balance() < 0)
+                _left->__rotate_left_pre_double_rotate(this);
+            root = this->__rotate_right(parent);
         }
     }
     else if(value < _value.first && value + width >= _value.first)
@@ -126,6 +129,7 @@ Range_Tree::Node* Range_Tree::Node::__insert_in_side(int value, int width, Range
         }
         break;
     }
+    __update_height();
     return root;
 }
 
@@ -135,11 +139,11 @@ void Range_Tree::Node::__update_height()
     if(_left == NULL && _right == NULL)
         _height = 1;
     else if(_left == NULL)
-        _height = _right->height() + 1;
+        _height = _right->_height + 1;
     else if(_right == NULL)
-        _height = _left->height() + 1;
+        _height = _left->_height + 1;
     else
-        _height = max(_right->height(), _left->height()) + 1;
+        _height = max(_right->_height, _left->_height) + 1;
 
 }
 
@@ -170,22 +174,52 @@ bool Range_Tree::Node::__check(int value, int width)
 
 }
 
-void Range_Tree::Node::__rotate_left(Node *parent)
+Range_Tree::Node * Range_Tree::Node::__rotate_left(Node *parent)
 {
+    Node * root = _right;
     Node * aux = _right->_left;
     _right->_left = this;
     if(parent != NULL)
         parent->_right = _right;
     _right = aux;
+    __update_height();
+    return root;
 }
 
-void Range_Tree::Node::__rotate_right(Node *parent)
+Range_Tree::Node *Range_Tree::Node::__rotate_left_pre_double_rotate(Range_Tree::Node *parent)
 {
+    Node * root = _right;
+    Node * aux = _right->_left;
+    _right->_left = this;
+    if(parent != NULL)
+        parent->_left = _right;
+    _right = aux;
+    __update_height();
+    return root;
+}
+
+Range_Tree::Node *  Range_Tree::Node::__rotate_right(Node *parent)
+{
+    Node * root = _left;
     Node * aux = _left->_right;
     _left->_right = this;
     if(parent != NULL)
         parent->_left = _left;
     _left = aux;
+    __update_height();
+    return root;
+}
+
+Range_Tree::Node *Range_Tree::Node::__rotate_right_pre_double_rotate(Range_Tree::Node *parent)
+{
+    Node * root = _left;
+    Node * aux = _left->_right;
+    _left->_right = this;
+    if(parent != NULL)
+        parent->_right = _left;
+    _left = aux;
+    __update_height();
+    return root;
 }
 
 //void Range_Tree::Node::__balance_if_neccessary(Node * parent)
@@ -223,10 +257,6 @@ Range_Tree::Node::~Node()
         delete _right;
 }
 
-unsigned Range_Tree::Node::height() const
-{
-    return _height;
-}
 
 int Range_Tree::Node::balance() const
 {
@@ -237,11 +267,6 @@ int Range_Tree::Node::balance() const
     if(_right != NULL)
         right_height = _right->_height + 1;
     return left_height - right_height;
-}
-
-pair<int, int> Range_Tree::Node::value() const
-{
-    return _value;
 }
 
 void Range_Tree::Node::print_node(int offset)
