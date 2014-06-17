@@ -12,6 +12,8 @@ TARGET = tst_rtreetest
 CONFIG   += console
 CONFIG   -= app_bundle
 
+QMAKE_CXXFLAGS += -Wall -Werror
+
 TEMPLATE = app
 
 

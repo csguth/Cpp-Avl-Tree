@@ -22,30 +22,45 @@ using std::endl;
 class Range_Tree
 {
 public:
+
+    static const std::pair<int, unsigned> EMPTY_TREE_ROOT;
+
+    enum Remove_Status {
+        SUCCESS = 0,
+        INVALID_POSITION,
+        NOT_FOUND
+    };
+
     class Node {
         enum Side {
-            LEFT = 0, RIGHT
+            LEFT = 0, RIGHT, CENTER
         };
 
         friend class Range_Tree;
+    public:
         Node * _left;
         Node * _right;
-        pair<int, int> _value;
+        pair<int, unsigned> _value;
         unsigned _height;
 
-        Node *__insert(int value, int width, Node *parent);
-        Node *__insert_in_side(int value, int width, Side side);
+        Node *__insert(int value, unsigned width, Node *parent);
+        Node *__insert_in_side(int value, unsigned width, Side side);
         void __update_height();
 
-        bool __check(int value, int width);
-        Range_Tree::Node *  __rotate_left(Node * parent);
-        Range_Tree::Node *  __rotate_left_pre_double_rotate(Node * parent);
-        Range_Tree::Node *  __rotate_right(Node * parent);
-        Range_Tree::Node *  __rotate_right_pre_double_rotate(Node * parent);
+        bool __check(int value, unsigned width);
+        Node * __rotate_left(Node * parent);
+        Node * __rotate_left_pre_double_rotate(Node * parent);
+        Node * __rotate_right(Node * parent);
+        Node * __rotate_right_pre_double_rotate(Node * parent);
+        Node * __balance(Node * parent);
+
+        Node * __remove(int value, Remove_Status & status, Node * parent, Node ** removed);
+        Node * __remove_from_side(int value, Side side, Remove_Status & status, Node * parent, Node ** removed);
+        Node * __remove_bigger_smaller_child();
 
         Node(int begin, int width);
         virtual ~Node();
-        int balance() const;
+        int __balance_factor() const;
 
         // debug
         void print_node(int offset = 0);
@@ -67,8 +82,9 @@ public:
     int begin();
     int end();
     bool empty();
-    bool insert(int begin, int width);
-    bool check(int begin, int width);
+    bool insert(int begin, unsigned width);
+    bool check(int begin, unsigned width);
+    Remove_Status remove(int position);
     unsigned size();
     std::pair<int, unsigned> root();
 
