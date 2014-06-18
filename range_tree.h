@@ -22,14 +22,12 @@ using std::endl;
 class Range_Tree
 {
 public:
-
-    static const std::pair<int, unsigned> EMPTY_TREE_ROOT;
-
     enum Remove_Status {
         SUCCESS = 0,
         INVALID_POSITION,
         NOT_FOUND
     };
+private:
 
     class Node {
         enum Side {
@@ -37,7 +35,6 @@ public:
         };
 
         friend class Range_Tree;
-    public:
         Node * _left;
         Node * _right;
         pair<int, unsigned> _value;
@@ -66,16 +63,13 @@ public:
         void print_node(int offset = 0);
     };
 
-public:
-//private:
-
     int _begin;
     int _end;
     int _size;
     Node * _root;
 
 public:
-
+    static const std::pair<int, unsigned> EMPTY_TREE_ROOT;
 
     Range_Tree(int begin, int end);
     virtual ~Range_Tree();

@@ -56,8 +56,6 @@ private Q_SLOTS:
 
     void removeRootWith6ElementsInsertedInCrescentOrder();
 
-    void printingATree();
-
 };
 
 RtreeTest::RtreeTest()
@@ -70,7 +68,7 @@ void RtreeTest::createAEmptyTreeWithARange()
     QVERIFY(rtree.begin() == 0);
     QVERIFY(rtree.end() == 8000);
     QVERIFY(rtree.empty());
-    QVERIFY(rtree._root == NULL);
+    QVERIFY(rtree.root() == Range_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::insertAboveRange()
@@ -105,7 +103,7 @@ void RtreeTest::checkRoot()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(rtree._root != NULL);
+    QVERIFY(rtree.root().first == 100 && rtree.root().second == 300);
 }
 
 void RtreeTest::insertLessThanRootWithoutOverlap()
@@ -325,6 +323,7 @@ void RtreeTest::removingRootWithThreeElements()
     rtree.insert(40, 9);
     QVERIFY(rtree.root().first == 50);
     QVERIFY(rtree.size() == 3);
+    cout << "Removing root 50" << endl;
     QVERIFY(rtree.remove(50) == Range_Tree::SUCCESS);
     QVERIFY(rtree.size() == 2);
     QVERIFY(rtree.root().first == 40);
@@ -391,27 +390,9 @@ void RtreeTest::removeRootWith6ElementsInsertedInCrescentOrder()
     QVERIFY(rtree.remove(42) == Range_Tree::SUCCESS);
     QVERIFY(rtree.size() == 5);
     QVERIFY(rtree.root().first == 30);
-    QVERIFY(rtree._root->_left->_value.first == 20);
-    QVERIFY(rtree._root->_right->_value.first == 50);
-    rtree.print_tree();
+//    QVERIFY(rtree._root->_left->_value.first == 20; PRIVATE
+//    QVERIFY(rtree._root->_right->_value.first == 50);
 }
-
-void RtreeTest::printingATree()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(60, 9);
-    rtree.insert(50, 9);
-    rtree.insert(40, 9);
-    rtree.insert(30, 9);
-    rtree.insert(20, 9);
-    rtree.insert(10, 9);
-    rtree.insert(0, 9);
-
-    rtree.print_tree();
-
-    QVERIFY(true);
-}
-
 
 QTEST_APPLESS_MAIN(RtreeTest)
 
