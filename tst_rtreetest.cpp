@@ -2,6 +2,13 @@
 #include <QtTest>
 
 #include "range_tree.h"
+#include <set>
+using std::set;
+
+#include <algorithm>
+using std::random_shuffle;
+
+#include <cstdlib>
 
 class RtreeTest : public QObject
 {
@@ -59,7 +66,8 @@ private Q_SLOTS:
     void findExistentElement();
     void findInexistentElement();
 
-    void insert1000ElementsAndFindOne();
+    void insert1000SortedElementsAndFindOne();
+    void insert1000NonSortedElementsAndFindOne();
 
 };
 
@@ -418,8 +426,26 @@ void RtreeTest::findInexistentElement()
     std::pair<int, unsigned> result = rtree.find(30, 5);
     QVERIFY(result == Range_Tree::EMPTY_TREE_ROOT);
 }
+int myrandom (int i) { return std::rand()%i;}
+void RtreeTest::insert1000NonSortedElementsAndFindOne()
+{
+    std::srand (0);
+    std::vector<std::pair<int, unsigned> > mySet;
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    for(unsigned i = 0; i < 1000; i++)
+        mySet.push_back(make_pair(i*10, 5));
+    random_shuffle(mySet.begin(), mySet.end(), myrandom);
+    for(unsigned i = 0; i < mySet.size(); i++)
+    {
+        cout << i << " Inserting " << mySet[i].first << ", " << mySet[i].second << endl;
+        QVERIFY(rtree.insert(mySet[i].first, mySet[i].second));
+    }
+    QVERIFY(rtree.size() == mySet.size());
+    std::pair<int, unsigned> result = rtree.find(51, 2);
+    QVERIFY(result.first == 50 && result.second == 5);
+}
 
-void RtreeTest::insert1000ElementsAndFindOne()
+void RtreeTest::insert1000SortedElementsAndFindOne()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     for(unsigned i = 0; i < 1000; i++)
