@@ -45,6 +45,8 @@ private:
         void __update_height();
 
         bool __check(int value, unsigned width);
+        std::pair<int, unsigned> __find(int value, unsigned width);
+
         Node * __rotate_left(Node * parent);
         Node * __rotate_left_pre_double_rotate(Node * parent);
         Node * __rotate_right(Node * parent);
@@ -78,9 +80,11 @@ public:
     bool empty();
     bool insert(int begin, unsigned width);
     bool check(int begin, unsigned width);
+
     Remove_Status remove(int position);
     unsigned size();
     std::pair<int, unsigned> root();
+    std::pair<int, unsigned> find(int begin, unsigned width);
 
     // DEBUG
     void print_tree();

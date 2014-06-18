@@ -89,6 +89,13 @@ std::pair<int, unsigned> Range_Tree::root()
     return _root->_value;
 }
 
+std::pair<int, unsigned> Range_Tree::find(int begin, unsigned width)
+{
+    if(_root != NULL)
+        return _root->__find(begin, width);
+    return Range_Tree::EMPTY_TREE_ROOT;
+}
+
 void Range_Tree::print_tree()
 {
     cout << "Tree: " << endl;
@@ -171,7 +178,6 @@ Range_Tree::Node *Range_Tree::Node::__remove_from_side(int value, Range_Tree::No
             root = _right->__remove(value, status, this, removed);
         break;
     case CENTER:
-        // REMOVE THIS
         status = SUCCESS;
         root = __remove_bigger_smaller_child();
         if(root != NULL)
@@ -281,6 +287,31 @@ bool Range_Tree::Node::__check(int value, unsigned width)
     }
 
     return false;
+}
+
+std::pair<int, unsigned> Range_Tree::Node::__find(int value, unsigned width)
+{
+    static int count;
+    count++;
+    cout << "Range_Tree::Node::__find(int value, unsigned width) count = " << count << endl;
+    if((value < _value.first && int(value + width) > _value.first) || (value > _value.first && value < int(_value.first + _value.second)))
+        return _value;
+
+    if(int(value + width) < _value.first)
+    {
+        if(_left == NULL)
+            return Range_Tree::EMPTY_TREE_ROOT;
+        return _left->__find(value, width);
+    }
+
+    if(value > int(_value.first + _value.second))
+    {
+        if(_right == NULL)
+            return Range_Tree::EMPTY_TREE_ROOT;
+        return _right->__find(value, width);
+    }
+
+    return Range_Tree::EMPTY_TREE_ROOT;
 }
 
 

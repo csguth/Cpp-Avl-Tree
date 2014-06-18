@@ -56,6 +56,11 @@ private Q_SLOTS:
 
     void removeRootWith6ElementsInsertedInCrescentOrder();
 
+    void findExistentElement();
+    void findInexistentElement();
+
+    void insert1000ElementsAndFindOne();
+
 };
 
 RtreeTest::RtreeTest()
@@ -207,20 +212,20 @@ void RtreeTest::rootChangeWithDoubleLeftRotation()
 void RtreeTest::rootChangeWithDoubleRightRotation()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.print_tree();
+//    rtree.print_tree();
 
     rtree.insert(30, 9);
-    rtree.print_tree();
+//    rtree.print_tree();
 
 
     QVERIFY(rtree.root().first == 30);
     rtree.insert(10, 9);
 
-    rtree.print_tree();
+//    rtree.print_tree();
 
     QVERIFY(rtree.root().first == 30);
     rtree.insert(20, 9);
-    rtree.print_tree();
+//    rtree.print_tree();
 
     QVERIFY(rtree.root().first == 20);
 
@@ -391,7 +396,37 @@ void RtreeTest::removeRootWith6ElementsInsertedInCrescentOrder()
     QVERIFY(rtree.size() == 5);
     QVERIFY(rtree.root().first == 30);
 //    QVERIFY(rtree._root->_left->_value.first == 20; PRIVATE
-//    QVERIFY(rtree._root->_right->_value.first == 50);
+    //    QVERIFY(rtree._root->_right->_value.first == 50);
+}
+
+void RtreeTest::findExistentElement()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(10, 9);
+    rtree.insert(20, 9);
+    rtree.insert(30, 9);
+    std::pair<int, unsigned> result = rtree.find(33, 5);
+    QVERIFY(result.first == 30 && result.second == 9);
+}
+
+void RtreeTest::findInexistentElement()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(10, 9);
+    rtree.insert(20, 9);
+    rtree.insert(40, 9);
+    std::pair<int, unsigned> result = rtree.find(30, 5);
+    QVERIFY(result == Range_Tree::EMPTY_TREE_ROOT);
+}
+
+void RtreeTest::insert1000ElementsAndFindOne()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    for(unsigned i = 0; i < 1000; i++)
+        QVERIFY(rtree.insert(i*10, 5));
+    QVERIFY(rtree.size() == 1000);
+    std::pair<int, unsigned> result = rtree.find(51, 2);
+    QVERIFY(result.first == 50 && result.second == 5);
 }
 
 QTEST_APPLESS_MAIN(RtreeTest)
