@@ -20,6 +20,7 @@ public:
 
 private:
     Range_Tree createTreeFrom0ToEightK();
+    Range_Tree createTreeFrom0To20K();
 
 private Q_SLOTS:
     void createAEmptyTreeWithARange();
@@ -50,24 +51,23 @@ private Q_SLOTS:
 
     void findingAValue();
 
-    void removeSmallerWithThreeElements();
-    void removeGreaterWithThreeElements();
-    void removingRootWithThreeElements();
-
-    void removeAboveRange();
-    void removeBelowRange();
-    void removeRootWithOneElement();
-    void removeFromEmptyTree();
-
     void checkRootOfAnEmptyTree();
-
-    void removeRootWith6ElementsInsertedInCrescentOrder();
 
     void findExistentElement();
     void findInexistentElement();
 
     void insert1000SortedElementsAndFindOne();
     void insert1000NonSortedElementsAndFindOne();
+
+    void removeAboveRange();
+    void removeBelowRange();
+    void removeFromAEmptyTree();
+    void removeRootFromATreeWithASingleElement();
+    void removeTheBiggestFromATreeWithTwoElements();
+    void removeTheSmallestFromATreeWithTwoElements();
+    void removeTheRootFromATreeWithThreeElements();
+    void removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach();
+
 
 };
 
@@ -122,7 +122,7 @@ void RtreeTest::checkRoot()
 void RtreeTest::insertLessThanRootWithoutOverlap()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(100, 300);
+    QVERIFY(rtree.insert(100, 300));
     QVERIFY(rtree.insert(50, 10));
     QVERIFY(rtree.size() == 2);
 }
@@ -130,9 +130,9 @@ void RtreeTest::insertLessThanRootWithoutOverlap()
 void RtreeTest::insertLessThanRootWithOverlap()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(100, 300);
+    QVERIFY(rtree.insert(100, 300));
     QVERIFY(!rtree.insert(80, 30));
-    QVERIFY(rtree.size() != 2);
+    QVERIFY(rtree.size() == 1);
 }
 
 void RtreeTest::insertGreatherThanRootWithoutOverlap()
@@ -155,28 +155,28 @@ void RtreeTest::checkIfRangeCanBeInsertedBeforeRoot()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(rtree.check(50, 49));
+    QVERIFY(rtree.find(50, 49) == Range_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::checkIfRangeCanBeInsertedAfterRoot()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(rtree.check(401, 50));
+    QVERIFY(rtree.find(401, 49) == Range_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedBeforeRoot()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(!rtree.check(50, 100));
+    QVERIFY(rtree.find(50, 100).first == 100 && rtree.find(50, 100).second == 300);
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(!rtree.check(390, 50));
+    QVERIFY(rtree.find(390, 50).first == 100 && rtree.find(390, 50).second == 300);
 }
 
 
@@ -268,6 +268,14 @@ Range_Tree RtreeTest::createTreeFrom0ToEightK()
     return rtree;
 }
 
+Range_Tree RtreeTest::createTreeFrom0To20K()
+{
+    int begin = 0;
+    int end = 20000;
+    Range_Tree rtree(begin, end);
+    return rtree;
+}
+
 void RtreeTest::insertSixDowntoZero()
 {
     Range_Tree rtree = createTreeFrom0ToEightK();
@@ -298,89 +306,10 @@ void RtreeTest::findingAValue()
     rtree.insert(20, 9);
     rtree.insert(10, 9);
     rtree.insert(0, 9);
-    QVERIFY(rtree.check(80, 100));
-    QVERIFY(!rtree.check(32, 5));
+    QVERIFY(rtree.find(80, 100) == Range_Tree::EMPTY_TREE_ROOT);
+    QVERIFY(rtree.find(32, 5) == std::make_pair(30, unsigned(9)));
 }
 
-void RtreeTest::removeSmallerWithThreeElements()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(60, 9);
-    rtree.insert(50, 9);
-    rtree.insert(40, 9);
-    QVERIFY(rtree.root().first == 50);
-    QVERIFY(rtree.size() == 3);
-    QVERIFY(rtree.remove(40) == Range_Tree::SUCCESS);
-    QVERIFY(rtree.size() == 2);
-    QVERIFY(rtree.root().first == 50);
-}
-
-void RtreeTest::removeGreaterWithThreeElements()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(60, 9);
-    rtree.insert(50, 9);
-    rtree.insert(40, 9);
-    QVERIFY(rtree.root().first == 50);
-    QVERIFY(rtree.size() == 3);
-    QVERIFY(rtree.remove(60) == Range_Tree::SUCCESS);
-    QVERIFY(rtree.size() == 2);
-    QVERIFY(rtree.root().first == 50);
-}
-
-void RtreeTest::removingRootWithThreeElements()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(60, 9);
-    rtree.insert(50, 9);
-    rtree.insert(40, 9);
-    QVERIFY(rtree.root().first == 50);
-    QVERIFY(rtree.size() == 3);
-    cout << "Removing root 50" << endl;
-    QVERIFY(rtree.remove(50) == Range_Tree::SUCCESS);
-    QVERIFY(rtree.size() == 2);
-    QVERIFY(rtree.root().first == 40);
-}
-
-void RtreeTest::removeAboveRange()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    QVERIFY(rtree.empty());
-    QVERIFY(rtree.insert(100, 4));
-    QVERIFY(rtree.size() == 1);
-    QVERIFY(rtree.remove(rtree.end()+1) == Range_Tree::INVALID_POSITION);
-    QVERIFY(rtree.root().first == 100);
-    QVERIFY(rtree.size() == 1);
-}
-
-void RtreeTest::removeBelowRange()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    QVERIFY(rtree.empty());
-    QVERIFY(rtree.insert(100, 4));
-    QVERIFY(rtree.size() == 1);
-    QVERIFY(rtree.remove(rtree.begin()-1) == Range_Tree::INVALID_POSITION);
-    QVERIFY(rtree.root().first == 100);
-    QVERIFY(rtree.size() == 1);
-}
-
-void RtreeTest::removeRootWithOneElement()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    QVERIFY(rtree.empty());
-    QVERIFY(rtree.insert(100, 4));
-    QVERIFY(rtree.size() == 1);
-    QVERIFY(rtree.remove(102) == Range_Tree::SUCCESS);
-    QVERIFY(rtree.root().first == std::numeric_limits<int>::infinity());
-    QVERIFY(rtree.empty());
-}
-
-void RtreeTest::removeFromEmptyTree()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    QVERIFY(rtree.empty());
-    QVERIFY(rtree.remove(0) == Range_Tree::NOT_FOUND);
-}
 
 void RtreeTest::checkRootOfAnEmptyTree()
 {
@@ -389,23 +318,6 @@ void RtreeTest::checkRootOfAnEmptyTree()
     QVERIFY(rtree.root() == Range_Tree::EMPTY_TREE_ROOT);
 }
 
-void RtreeTest::removeRootWith6ElementsInsertedInCrescentOrder()
-{
-    Range_Tree rtree = createTreeFrom0ToEightK();
-    rtree.insert(10, 9);
-    rtree.insert(20, 9);
-    rtree.insert(30, 9);
-    rtree.insert(40, 9);
-    rtree.insert(50, 9);
-    rtree.insert(60, 9);
-    QVERIFY(rtree.root().first == 40);
-    QVERIFY(rtree.size() == 6);
-    QVERIFY(rtree.remove(42) == Range_Tree::SUCCESS);
-    QVERIFY(rtree.size() == 5);
-    QVERIFY(rtree.root().first == 30);
-//    QVERIFY(rtree._root->_left->_value.first == 20; PRIVATE
-    //    QVERIFY(rtree._root->_right->_value.first == 50);
-}
 
 void RtreeTest::findExistentElement()
 {
@@ -431,15 +343,12 @@ void RtreeTest::insert1000NonSortedElementsAndFindOne()
 {
     std::srand (0);
     std::vector<std::pair<int, unsigned> > mySet;
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    Range_Tree rtree = createTreeFrom0To20K();
     for(unsigned i = 0; i < 1000; i++)
         mySet.push_back(make_pair(i*10, 5));
     random_shuffle(mySet.begin(), mySet.end(), myrandom);
     for(unsigned i = 0; i < mySet.size(); i++)
-    {
-        cout << i << " Inserting " << mySet[i].first << ", " << mySet[i].second << endl;
         QVERIFY(rtree.insert(mySet[i].first, mySet[i].second));
-    }
     QVERIFY(rtree.size() == mySet.size());
     std::pair<int, unsigned> result = rtree.find(51, 2);
     QVERIFY(result.first == 50 && result.second == 5);
@@ -447,13 +356,110 @@ void RtreeTest::insert1000NonSortedElementsAndFindOne()
 
 void RtreeTest::insert1000SortedElementsAndFindOne()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    Range_Tree rtree = createTreeFrom0To20K();
     for(unsigned i = 0; i < 1000; i++)
         QVERIFY(rtree.insert(i*10, 5));
     QVERIFY(rtree.size() == 1000);
     std::pair<int, unsigned> result = rtree.find(51, 2);
     QVERIFY(result.first == 50 && result.second == 5);
 }
+
+void RtreeTest::removeAboveRange()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(10, 9);
+    rtree.insert(20, 9);
+    rtree.insert(40, 9);
+    std::pair<int, unsigned> value_removed = rtree.remove(9000);
+    QVERIFY(rtree.size() == 3);
+    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+}
+
+void RtreeTest::removeBelowRange()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(10, 9);
+    rtree.insert(20, 9);
+    rtree.insert(40, 9);
+    std::pair<int, unsigned> value_removed = rtree.remove(-5);
+    QVERIFY(rtree.size() == 3);
+    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+}
+
+void RtreeTest::removeFromAEmptyTree()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    QVERIFY(rtree.empty());
+    std::pair<int, unsigned> value_removed = rtree.remove(10);
+    QVERIFY(rtree.empty());
+    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+}
+
+void RtreeTest::removeRootFromATreeWithASingleElement()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(10, 300);
+    std::pair<int, unsigned> value_removed = rtree.remove(13);
+    QVERIFY(rtree.empty());
+    QVERIFY(value_removed == std::make_pair(10, unsigned(300)));
+}
+
+void RtreeTest::removeTheBiggestFromATreeWithTwoElements()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(400, 300);
+    rtree.insert(1000, 300);
+    QVERIFY(rtree.size() == 2);
+    std::pair<int, unsigned> value_removed = rtree.remove(1100);
+    QVERIFY(rtree.size() == 1);
+    QVERIFY(value_removed == std::make_pair(1000, unsigned(300)));
+}
+
+void RtreeTest::removeTheSmallestFromATreeWithTwoElements()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(400, 200);
+    rtree.insert(1000, 300);
+    QVERIFY(rtree.size() == 2);
+    std::pair<int, unsigned> value_removed = rtree.remove(500);
+    QVERIFY(rtree.size() == 1);
+    QVERIFY(value_removed == std::make_pair(400, unsigned(200)));
+}
+
+void RtreeTest::removeTheRootFromATreeWithThreeElements()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(38, 200);
+    rtree.insert(1000, 300);
+    rtree.insert(4000, 500);
+    QVERIFY(rtree.size() == 3);
+    std::pair<int, unsigned> value_removed = rtree.remove(1120);
+    QVERIFY(rtree.size() == 2);
+    QVERIFY(value_removed == std::make_pair(1000, unsigned(300)));
+    QVERIFY(rtree.root() == std::make_pair(4000, unsigned(500)));
+    QVERIFY(rtree.find(40, 2) == std::make_pair(38, unsigned(200)));
+}
+
+void RtreeTest::removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach()
+{
+    Range_Tree rtree = createTreeFrom0ToEightK();
+    rtree.insert(4000, 50);
+    rtree.insert(2000, 25);
+    rtree.insert(6000, 25);
+    rtree.insert(1000, 25);
+    rtree.insert(3000, 25);
+    rtree.insert(5000, 25);
+    rtree.insert(7000, 25);
+    QVERIFY(rtree.size() == 7);
+    QVERIFY(rtree.root() == std::make_pair(4000, unsigned(50)));
+    std::pair<int, unsigned> value_removed = rtree.remove(4005);
+    QVERIFY(rtree.size() == 6);
+    QVERIFY(value_removed == std::make_pair(4000, unsigned(50)));
+    QVERIFY(rtree.root() == std::make_pair(5000, unsigned(25)));
+    QVERIFY(rtree.find(6005, 3) == std::make_pair(6000, unsigned(25)));
+}
+
+
 
 QTEST_APPLESS_MAIN(RtreeTest)
 

@@ -30,8 +30,13 @@ public:
 private:
 
     class Node {
-        enum Side {
-            LEFT = 0, RIGHT, CENTER
+
+        enum Balance_Factor {
+            UNBALANCED_TO_RIGHT = -2,
+            BALANCED_TO_RIGHT = -1,
+            BALANCED_CENTER = 0,
+            BALANCED_TO_LEFT = 1,
+            UNBALANCED_TO_LEFT = 2
         };
 
         friend class Range_Tree;
@@ -39,23 +44,25 @@ private:
         Node * _right;
         pair<int, unsigned> _value;
         unsigned _height;
-
-        Node *__insert(int value, unsigned width, Node *parent);
-        Node *__insert_in_side(int value, unsigned width, Side side);
         void __update_height();
-
-        bool __check(int value, unsigned width);
         std::pair<int, unsigned> __find(int value, unsigned width);
 
-        Node * __rotate_left(Node * parent);
-        Node * __rotate_left_pre_double_rotate(Node * parent);
-        Node * __rotate_right(Node * parent);
-        Node * __rotate_right_pre_double_rotate(Node * parent);
-        Node * __balance(Node * parent);
+        Node * __insert(std::pair<int, unsigned> value);
+        Node * __max();
+        Node * __balance();
+        Node * __RR_rotate();
+        Node * __LR_rotate();
+        Node * __RL_rotate();
+        Node * __LL_rotate();
 
-        Node * __remove(int value, Remove_Status & status, Node * parent, Node ** removed);
-        Node * __remove_from_side(int value, Side side, Remove_Status & status, Node * parent, Node ** removed);
-        Node * __remove_bigger_smaller_child();
+        enum Comparison_Result {
+            LESS_THAN = 0,
+            GREATER_THAN,
+            INTERSECT
+        };
+
+        Comparison_Result __compareTo(std::pair<int, unsigned> value);
+
 
         Node(int begin, int width);
         virtual ~Node();
@@ -70,6 +77,8 @@ private:
     int _size;
     Node * _root;
 
+    Node * __remove(Node * root, int position, std::pair<int, unsigned> & value);
+
 public:
     static const std::pair<int, unsigned> EMPTY_TREE_ROOT;
 
@@ -81,10 +90,11 @@ public:
     bool insert(int begin, unsigned width);
     bool check(int begin, unsigned width);
 
-    Remove_Status remove(int position);
+
     unsigned size();
     std::pair<int, unsigned> root();
     std::pair<int, unsigned> find(int begin, unsigned width);
+    std::pair<int, unsigned> remove(int position);
 
     // DEBUG
     void print_tree();
