@@ -17,11 +17,11 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += tst_rtreetest.cpp \
-    range_tree.cpp \
-    interval.cpp
+SOURCES += \
+    interval.cpp \
+    tst_rtreetest.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
-    range_tree.h \
-    interval.h
+    interval.h \
+    avl_tree.h

@@ -1,23 +1,31 @@
 #include "interval.h"
 
-const NonOverlappingInterval NonOverlappingInterval::INVALID = NonOverlappingInterval(numeric_limits<int>::infinity(), 0);
-NonOverlappingInterval::NonOverlappingInterval(int begin, unsigned size)
+const NonOverlappingInterval NonOverlappingInterval::_INVALID = NonOverlappingInterval(numeric_limits<int>::max()-1, 1);
+NonOverlappingInterval::NonOverlappingInterval(int begin, unsigned size) : _begin(begin), _size(size)
 {
+    if(size == 0)
+        throw new InvalidIntervalException();
 }
 
-bool NonOverlappingInterval::operator=(const NonOverlappingInterval &o) const
+bool NonOverlappingInterval::operator==(const NonOverlappingInterval &o) const
 {
-    return _begin < o._begin && int(_begin + _size) >= o._begin
+    return (_begin >= o._begin && _begin <= o.end()) ||
+           (end() >= o._begin && end() <= o.end());
 }
 
 bool NonOverlappingInterval::operator<(const NonOverlappingInterval &o) const
 {
-    return int(_begin + _size) < o._begin;
+    return end() < o._begin;
 }
 
 bool NonOverlappingInterval::operator>(const NonOverlappingInterval &o) const
 {
-    return _begin > int(o._begin + o._size);
+    return _begin > o.end();
+}
+
+bool NonOverlappingInterval::sameAs(const NonOverlappingInterval &o) const
+{
+    return _begin == o._begin && _size == o._size;
 }
 
 int NonOverlappingInterval::begin() const
@@ -32,7 +40,12 @@ unsigned NonOverlappingInterval::size() const
 
 int NonOverlappingInterval::end() const
 {
-    return int(_begin+_size);
+    return int(_begin + _size - 1);
+}
+
+bool NonOverlappingInterval::valid() const
+{
+    return _size > 0;
 }
 
 const NonOverlappingInterval NonOverlappingInterval::invalid()
