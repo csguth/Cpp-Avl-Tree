@@ -10,6 +10,8 @@ using std::random_shuffle;
 
 #include <cstdlib>
 
+#include "interval.h"
+
 class RtreeTest : public QObject
 {
     Q_OBJECT
@@ -19,46 +21,40 @@ public:
 
 
 private:
-    Range_Tree createTreeFrom0ToEightK();
-    Range_Tree createTreeFrom0To20K();
+    AVL_Tree<NonOverlappingInterval> createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> createTreeFrom0To20K();
 
 private Q_SLOTS:
+    void CreateAValidInterval();
+    void CompareTwoIntervals();
+
+
     void createAEmptyTreeWithARange();
     void insertAboveRange();
     void insertBelowRange();
     void insertValidRange();
     void checkNumberOfNodes();
     void checkRoot();
-
     void insertLessThanRootWithoutOverlap();
     void insertLessThanRootWithOverlap();
     void insertGreatherThanRootWithoutOverlap();
     void insertGreatherThanRootWithOverlap();
-
     void checkIfRangeCanBeInsertedBeforeRoot();
     void checkIfRangeCanBeInsertedAfterRoot();
     void checkIfRangeCannotBeInsertedBeforeRoot();
     void checkIfRangeCannotBeInsertedAfterRoot();
-
     void rootChangeWithLeftRotation();
     void rootChangeWithRightRotation();
-
     void rootChangeWithDoubleLeftRotation();
     void rootChangeWithDoubleRightRotation();
-
     void insertZeroToSix();
     void insertSixDowntoZero();
-
     void findingAValue();
-
     void checkRootOfAnEmptyTree();
-
     void findExistentElement();
     void findInexistentElement();
-
     void insert1000SortedElementsAndFindOne();
     void insert1000NonSortedElementsAndFindOne();
-
     void removeAboveRange();
     void removeBelowRange();
     void removeFromAEmptyTree();
@@ -77,28 +73,28 @@ RtreeTest::RtreeTest()
 
 void RtreeTest::createAEmptyTreeWithARange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.begin() == 0);
     QVERIFY(rtree.end() == 8000);
     QVERIFY(rtree.empty());
-    QVERIFY(rtree.root() == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(rtree.root() == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::insertAboveRange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(!rtree.insert(7800, 300));
 }
 
 void RtreeTest::insertBelowRange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(!rtree.insert(-5, 300));
 }
 
 void RtreeTest::insertValidRange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.insert(100, 300));
     QVERIFY(!rtree.empty());
     QVERIFY(rtree.size() == 1);
@@ -106,7 +102,7 @@ void RtreeTest::insertValidRange()
 
 void RtreeTest::checkNumberOfNodes()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.size() == 0);
     rtree.insert(100, 300);
     QVERIFY(rtree.size() == 1);
@@ -114,14 +110,14 @@ void RtreeTest::checkNumberOfNodes()
 
 void RtreeTest::checkRoot()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.root().first == 100 && rtree.root().second == 300);
 }
 
 void RtreeTest::insertLessThanRootWithoutOverlap()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.insert(100, 300));
     QVERIFY(rtree.insert(50, 10));
     QVERIFY(rtree.size() == 2);
@@ -129,7 +125,7 @@ void RtreeTest::insertLessThanRootWithoutOverlap()
 
 void RtreeTest::insertLessThanRootWithOverlap()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.insert(100, 300));
     QVERIFY(!rtree.insert(80, 30));
     QVERIFY(rtree.size() == 1);
@@ -137,7 +133,7 @@ void RtreeTest::insertLessThanRootWithOverlap()
 
 void RtreeTest::insertGreatherThanRootWithoutOverlap()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.insert(401, 30));
     QVERIFY(rtree.size() == 2);
@@ -145,7 +141,7 @@ void RtreeTest::insertGreatherThanRootWithoutOverlap()
 
 void RtreeTest::insertGreatherThanRootWithOverlap()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(!rtree.insert(390, 30));
     QVERIFY(rtree.size() != 2);
@@ -153,28 +149,28 @@ void RtreeTest::insertGreatherThanRootWithOverlap()
 
 void RtreeTest::checkIfRangeCanBeInsertedBeforeRoot()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(rtree.find(50, 49) == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(rtree.find(50, 49) == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::checkIfRangeCanBeInsertedAfterRoot()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
-    QVERIFY(rtree.find(401, 49) == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(rtree.find(401, 49) == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedBeforeRoot()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.find(50, 100).first == 100 && rtree.find(50, 100).second == 300);
 }
 
 void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(100, 300);
     QVERIFY(rtree.find(390, 50).first == 100 && rtree.find(390, 50).second == 300);
 }
@@ -182,7 +178,7 @@ void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 
 void RtreeTest::rootChangeWithLeftRotation()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(0, 9);
     QVERIFY(rtree.root().first == 0);
     rtree.insert(10, 9);
@@ -195,7 +191,7 @@ void RtreeTest::rootChangeWithLeftRotation()
 
 void RtreeTest::rootChangeWithRightRotation()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(30, 9);
     QVERIFY(rtree.root().first == 30);
     rtree.insert(20, 9);
@@ -208,7 +204,7 @@ void RtreeTest::rootChangeWithRightRotation()
 
 void RtreeTest::rootChangeWithDoubleLeftRotation()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(0, 9);
     QVERIFY(rtree.root().first == 0);
     rtree.insert(20, 9);
@@ -219,7 +215,7 @@ void RtreeTest::rootChangeWithDoubleLeftRotation()
 
 void RtreeTest::rootChangeWithDoubleRightRotation()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
 //    rtree.print_tree();
 
     rtree.insert(30, 9);
@@ -243,7 +239,7 @@ void RtreeTest::rootChangeWithDoubleRightRotation()
 
 void RtreeTest::insertZeroToSix()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(0, 9);
     QVERIFY(rtree.root().first == 0);
     rtree.insert(10, 9);
@@ -260,25 +256,37 @@ void RtreeTest::insertZeroToSix()
     QVERIFY(rtree.root().first == 30);
 }
 
-Range_Tree RtreeTest::createTreeFrom0ToEightK()
+AVL_Tree<NonOverlappingInterval> RtreeTest::createTreeFrom0ToEightK()
 {
-    int begin = 0;
-    int end = 8000;
-    Range_Tree rtree(begin, end);
+    AVL_Tree<NonOverlappingInterval> rtree;
+    rtree.insert(numeric_limits<int>::min(), unsigned(numeric_limits<int>::max()));
     return rtree;
 }
 
-Range_Tree RtreeTest::createTreeFrom0To20K()
+AVL_Tree<NonOverlappingInterval> RtreeTest::createTreeFrom0To20K()
 {
-    int begin = 0;
-    int end = 20000;
-    Range_Tree rtree(begin, end);
+    AVL_Tree<NonOverlappingInterval> rtree;
+    rtree.insert(numeric_limits<int>::min(), unsigned(20000+numeric_limits<int>::max()));
     return rtree;
+}
+
+
+void RtreeTest::CreateAValidInterval()
+{
+    const NonOverlappingInterval interval(120, 10);
+    QVERIFY(interval.begin() == 120);
+    QVERIFY(interval.end() == 129);
+    QVERIFY(interval.size() == 10);
+}
+
+void RtreeTest::CompareTwoIntervals()
+{
+
 }
 
 void RtreeTest::insertSixDowntoZero()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(60, 9);
     QVERIFY(rtree.root().first == 60);
     rtree.insert(50, 9);
@@ -298,7 +306,7 @@ void RtreeTest::insertSixDowntoZero()
 
 void RtreeTest::findingAValue()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(60, 9);
     rtree.insert(50, 9);
     rtree.insert(40, 9);
@@ -306,22 +314,22 @@ void RtreeTest::findingAValue()
     rtree.insert(20, 9);
     rtree.insert(10, 9);
     rtree.insert(0, 9);
-    QVERIFY(rtree.find(80, 100) == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(rtree.find(80, 100) == AVL_Tree::EMPTY_TREE_ROOT);
     QVERIFY(rtree.find(32, 5) == std::make_pair(30, unsigned(9)));
 }
 
 
 void RtreeTest::checkRootOfAnEmptyTree()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.empty());
-    QVERIFY(rtree.root() == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(rtree.root() == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 
 void RtreeTest::findExistentElement()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(10, 9);
     rtree.insert(20, 9);
     rtree.insert(30, 9);
@@ -331,19 +339,19 @@ void RtreeTest::findExistentElement()
 
 void RtreeTest::findInexistentElement()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(10, 9);
     rtree.insert(20, 9);
     rtree.insert(40, 9);
     std::pair<int, unsigned> result = rtree.find(30, 5);
-    QVERIFY(result == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(result == AVL_Tree::EMPTY_TREE_ROOT);
 }
 int myrandom (int i) { return std::rand()%i;}
 void RtreeTest::insert1000NonSortedElementsAndFindOne()
 {
     std::srand (0);
     std::vector<std::pair<int, unsigned> > mySet;
-    Range_Tree rtree = createTreeFrom0To20K();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0To20K();
     for(unsigned i = 0; i < 1000; i++)
         mySet.push_back(make_pair(i*10, 5));
     random_shuffle(mySet.begin(), mySet.end(), myrandom);
@@ -356,7 +364,7 @@ void RtreeTest::insert1000NonSortedElementsAndFindOne()
 
 void RtreeTest::insert1000SortedElementsAndFindOne()
 {
-    Range_Tree rtree = createTreeFrom0To20K();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0To20K();
     for(unsigned i = 0; i < 1000; i++)
         QVERIFY(rtree.insert(i*10, 5));
     QVERIFY(rtree.size() == 1000);
@@ -366,38 +374,38 @@ void RtreeTest::insert1000SortedElementsAndFindOne()
 
 void RtreeTest::removeAboveRange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(10, 9);
     rtree.insert(20, 9);
     rtree.insert(40, 9);
     std::pair<int, unsigned> value_removed = rtree.remove(9000);
     QVERIFY(rtree.size() == 3);
-    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(value_removed == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::removeBelowRange()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(10, 9);
     rtree.insert(20, 9);
     rtree.insert(40, 9);
     std::pair<int, unsigned> value_removed = rtree.remove(-5);
     QVERIFY(rtree.size() == 3);
-    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(value_removed == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::removeFromAEmptyTree()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     QVERIFY(rtree.empty());
     std::pair<int, unsigned> value_removed = rtree.remove(10);
     QVERIFY(rtree.empty());
-    QVERIFY(value_removed == Range_Tree::EMPTY_TREE_ROOT);
+//    QVERIFY(value_removed == AVL_Tree::EMPTY_TREE_ROOT);
 }
 
 void RtreeTest::removeRootFromATreeWithASingleElement()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(10, 300);
     std::pair<int, unsigned> value_removed = rtree.remove(13);
     QVERIFY(rtree.empty());
@@ -406,7 +414,7 @@ void RtreeTest::removeRootFromATreeWithASingleElement()
 
 void RtreeTest::removeTheBiggestFromATreeWithTwoElements()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(400, 300);
     rtree.insert(1000, 300);
     QVERIFY(rtree.size() == 2);
@@ -417,7 +425,7 @@ void RtreeTest::removeTheBiggestFromATreeWithTwoElements()
 
 void RtreeTest::removeTheSmallestFromATreeWithTwoElements()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(400, 200);
     rtree.insert(1000, 300);
     QVERIFY(rtree.size() == 2);
@@ -428,7 +436,7 @@ void RtreeTest::removeTheSmallestFromATreeWithTwoElements()
 
 void RtreeTest::removeTheRootFromATreeWithThreeElements()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(38, 200);
     rtree.insert(1000, 300);
     rtree.insert(4000, 500);
@@ -442,7 +450,7 @@ void RtreeTest::removeTheRootFromATreeWithThreeElements()
 
 void RtreeTest::removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach()
 {
-    Range_Tree rtree = createTreeFrom0ToEightK();
+    AVL_Tree<NonOverlappingInterval> rtree = createTreeFrom0ToEightK();
     rtree.insert(4000, 50);
     rtree.insert(2000, 25);
     rtree.insert(6000, 25);

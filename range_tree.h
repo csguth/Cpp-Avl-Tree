@@ -19,16 +19,9 @@ using std::max;
 using std::cout;
 using std::endl;
 
-class Range_Tree
+template <class T>
+class AVL_Tree
 {
-public:
-    enum Remove_Status {
-        SUCCESS = 0,
-        INVALID_POSITION,
-        NOT_FOUND
-    };
-private:
-
     class Node {
 
         enum Balance_Factor {
@@ -39,15 +32,15 @@ private:
             UNBALANCED_TO_LEFT = 2
         };
 
-        friend class Range_Tree;
+        friend class AVL_Tree;
         Node * _left;
         Node * _right;
-        pair<int, unsigned> _value;
+        T _value;
         unsigned _height;
         void __update_height();
-        std::pair<int, unsigned> __find(int value, unsigned width);
+        const T __find(T value);
 
-        Node * __insert(std::pair<int, unsigned> value);
+        Node * __insert(T value);
         Node * __max();
         Node * __balance();
         Node * __RR_rotate();
@@ -55,16 +48,7 @@ private:
         Node * __RL_rotate();
         Node * __LL_rotate();
 
-        enum Comparison_Result {
-            LESS_THAN = 0,
-            GREATER_THAN,
-            INTERSECT
-        };
-
-        Comparison_Result __compareTo(std::pair<int, unsigned> value);
-
-
-        Node(int begin, int width);
+        Node(T value);
         virtual ~Node();
         int __balance_factor() const;
 
@@ -72,32 +56,25 @@ private:
         void print_node(int offset = 0);
     };
 
-    int _begin;
-    int _end;
     int _size;
     Node * _root;
 
-    Node * __remove(Node * root, int position, std::pair<int, unsigned> & value);
+    Node * __remove(Node * root, int position, T & value);
 
 public:
-    static const std::pair<int, unsigned> EMPTY_TREE_ROOT;
 
-    Range_Tree(int begin, int end);
-    virtual ~Range_Tree();
-    int begin();
-    int end();
+    AVL_Tree();
+    virtual ~AVL_Tree();
     bool empty();
-    bool insert(int begin, unsigned width);
-    bool check(int begin, unsigned width);
+    bool insert(T value);
+    bool check(T value);
 
 
     unsigned size();
-    std::pair<int, unsigned> root();
-    std::pair<int, unsigned> find(int begin, unsigned width);
-    std::pair<int, unsigned> remove(int position);
+    T root();
+    T find(T value);
+    T remove(int position);
 
-    // DEBUG
-    void print_tree();
 };
 
 #endif // RANGE_TREE_H

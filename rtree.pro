@@ -12,14 +12,16 @@ TARGET = tst_rtreetest
 CONFIG   += console
 CONFIG   -= app_bundle
 
-QMAKE_CXXFLAGS += -Wall -Werror
+#QMAKE_CXXFLAGS += -Wall -Werror
 
 TEMPLATE = app
 
 
 SOURCES += tst_rtreetest.cpp \
-    range_tree.cpp
+    range_tree.cpp \
+    interval.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \
-    range_tree.h
+    range_tree.h \
+    interval.h

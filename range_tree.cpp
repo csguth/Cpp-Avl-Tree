@@ -1,19 +1,17 @@
 #include "range_tree.h"
 
-const std::pair<int, unsigned> Range_Tree::EMPTY_TREE_ROOT = std::make_pair(numeric_limits<int>::infinity(), 0);
 
 
 
 
-
-Range_Tree::Node *Range_Tree::__remove(Range_Tree::Node *root, int position, std::pair<int, unsigned> &value)
+AVL_Tree<T>::Node *AVL_Tree::__remove(Node *root, int position, T &value)
 {
     if(root == NULL)
         return NULL;
 
     if(position >= root->_value.first && position <= int(root->_value.first + root->_value.second))
     {
-        if(value == Range_Tree::EMPTY_TREE_ROOT)
+        if(value == AVL_Tree::EMPTY_TREE_ROOT)
             value = root->_value;
         if(root->_right == NULL)
         {
@@ -42,44 +40,37 @@ Range_Tree::Node *Range_Tree::__remove(Range_Tree::Node *root, int position, std
     return root;
 }
 
-Range_Tree::Range_Tree(int begin, int end): _begin(begin), _end(end), _size(0), _root(NULL)
+
+AVL_Tree::AVL_Tree(): _size(0), _root(NULL)
 {
 
 }
 
-Range_Tree::~Range_Tree()
+
+AVL_Tree::~AVL_Tree()
 {
     if(_root != NULL)
         delete _root;
 }
 
-int Range_Tree::begin()
-{
-    return _begin;
-}
-
-int Range_Tree::end()
-{
-    return _end;
-}
-
-bool Range_Tree::empty()
+bool AVL_Tree::empty()
 {
     return _size == 0;
 }
 
-bool Range_Tree::insert(int begin, unsigned width)
+template <class T>
+bool AVL_Tree::insert(T value)
 {
-    if(begin < _begin || int(begin + width) > _end)
+    if(value < _begin || int(value + width) > _end)
         return false;
 
     if(_root == NULL)
     {
-        _root = new Node(begin, width);
+        _root = new Node(value, width);
         _size++;
         return true;
     }
-    Node * root_of_subtree = _root->__insert(make_pair(begin, width));
+    Node * root_of_subtree = _root->__insert(make_pair(value, width));
     if(root_of_subtree != NULL)
     {
         _root = root_of_subtree;
@@ -89,36 +80,36 @@ bool Range_Tree::insert(int begin, unsigned width)
     return false;
 }
 
-std::pair<int, unsigned> Range_Tree::remove(int position)
+T AVL_Tree::remove(int position)
 {
     if(position < _begin || position > _end)
-        return Range_Tree::EMPTY_TREE_ROOT;
+        return T::invalid();
 
-    std::pair<int, unsigned> value = Range_Tree::EMPTY_TREE_ROOT;
+    T value = T::invalid();
     _root = __remove(_root, position, value);
     return value;
 }
 
-unsigned Range_Tree::size()
+unsigned AVL_Tree::size()
 {
     return _size;
 }
 
-std::pair<int, unsigned> Range_Tree::root()
+std::pair<int, unsigned> AVL_Tree::root()
 {
     if(_root == NULL)
-        return Range_Tree::EMPTY_TREE_ROOT;
+        return AVL_Tree::EMPTY_TREE_ROOT;
     return _root->_value;
 }
 
-std::pair<int, unsigned> Range_Tree::find(int begin, unsigned width)
+std::pair<int, unsigned> AVL_Tree::find(int begin, unsigned width)
 {
     if(_root != NULL)
         return _root->__find(begin, width);
-    return Range_Tree::EMPTY_TREE_ROOT;
+    return AVL_Tree::EMPTY_TREE_ROOT;
 }
 
-void Range_Tree::print_tree()
+void AVL_Tree::print_tree()
 {
     cout << "Tree: " << endl;
     if(_root == NULL)
@@ -127,20 +118,7 @@ void Range_Tree::print_tree()
         _root->print_node();
 }
 
-
-
-Range_Tree::Node::Comparison_Result Range_Tree::Node::__compareTo(std::pair<int, unsigned> value)
-{
-    if(int(_value.first + _value.second) < value.first)
-        return LESS_THAN;
-    else if(_value.first > int(value.first + value.second))
-        return GREATER_THAN;
-    else
-        return INTERSECT;
-}
-
-
-void Range_Tree::Node::__update_height()
+void AVL_Tree::Node::__update_height()
 {
 
     if(_left == NULL && _right == NULL)
@@ -153,7 +131,7 @@ void Range_Tree::Node::__update_height()
         _height = max(_right->_height, _left->_height) + 1;
 
 }
-std::pair<int, unsigned> Range_Tree::Node::__find(int value, unsigned width)
+const AVL_Tree::T AVL_Tree::Node::__find(AVL_Tree::T value)
 {
     //    static int count;
     //    count++;
@@ -164,30 +142,30 @@ std::pair<int, unsigned> Range_Tree::Node::__find(int value, unsigned width)
     if(int(value + width) < _value.first)
     {
         if(_left == NULL)
-            return Range_Tree::EMPTY_TREE_ROOT;
+            return AVL_Tree::EMPTY_TREE_ROOT;
         return _left->__find(value, width);
     }
 
     if(value > int(_value.first + _value.second))
     {
         if(_right == NULL)
-            return Range_Tree::EMPTY_TREE_ROOT;
+            return AVL_Tree::EMPTY_TREE_ROOT;
         return _right->__find(value, width);
     }
 
-    return Range_Tree::EMPTY_TREE_ROOT;
+    return AVL_Tree::EMPTY_TREE_ROOT;
 }
 
-Range_Tree::Node *Range_Tree::Node::__insert(std::pair<int, unsigned> value)
+AVL_Tree::Node *AVL_Tree::Node::__insert(T value)
 {
     switch (__compareTo(value)) {
-    case Range_Tree::Node::GREATER_THAN:
+    case AVL_Tree::Node::GREATER_THAN:
         if(_left != NULL)
             _left = _left->__insert(value);
         else
             _left = new Node(value.first, value.second);
         break;
-    case Range_Tree::Node::LESS_THAN:
+    case AVL_Tree::Node::LESS_THAN:
         if(_right != NULL)
             _right = _right->__insert(value);
         else
@@ -203,14 +181,14 @@ Range_Tree::Node *Range_Tree::Node::__insert(std::pair<int, unsigned> value)
     return root;
 }
 
-Range_Tree::Node *Range_Tree::Node::__max()
+AVL_Tree::Node *AVL_Tree::Node::__max()
 {
     if(_right == NULL)
         return this;
     return _right->__max();
 }
 
-Range_Tree::Node *Range_Tree::Node::__balance()
+AVL_Tree::Node *AVL_Tree::Node::__balance()
 {
     Node * root = this;
     switch(__balance_factor())
@@ -232,7 +210,7 @@ Range_Tree::Node *Range_Tree::Node::__balance()
     return root;
 }
 
-Range_Tree::Node *Range_Tree::Node::__RR_rotate()
+AVL_Tree::Node *AVL_Tree::Node::__RR_rotate()
 {
     Node * a = _left;
     _left = a->_right;
@@ -242,19 +220,19 @@ Range_Tree::Node *Range_Tree::Node::__RR_rotate()
     return a;
 }
 
-Range_Tree::Node *Range_Tree::Node::__LR_rotate()
+AVL_Tree::Node *AVL_Tree::Node::__LR_rotate()
 {
     _left = _left->__LL_rotate();
     return __RR_rotate();
 }
 
-Range_Tree::Node *Range_Tree::Node::__RL_rotate()
+AVL_Tree::Node *AVL_Tree::Node::__RL_rotate()
 {
     _right = _right->__RR_rotate();
     return __LL_rotate();
 }
 
-Range_Tree::Node *Range_Tree::Node::__LL_rotate()
+AVL_Tree::Node *AVL_Tree::Node::__LL_rotate()
 {
     Node * a = _right;
     _right = a->_left;
@@ -264,12 +242,12 @@ Range_Tree::Node *Range_Tree::Node::__LL_rotate()
     return a;
 }
 
-Range_Tree::Node::Node(int begin, int width): _left(NULL), _right(NULL), _value(std::make_pair(begin, width)), _height(1)
+AVL_Tree::Node::Node(int begin, int width): _left(NULL), _right(NULL), _value(std::make_pair(begin, width)), _height(1)
 {
 
 }
 
-Range_Tree::Node::~Node()
+AVL_Tree::Node::~Node()
 {
     if(_left != NULL)
         delete _left;
@@ -278,7 +256,7 @@ Range_Tree::Node::~Node()
 }
 
 
-int Range_Tree::Node::__balance_factor() const
+int AVL_Tree::Node::__balance_factor() const
 {
     int right_height = 1;
     int left_height = 1;
@@ -289,25 +267,25 @@ int Range_Tree::Node::__balance_factor() const
     return left_height - right_height;
 }
 
-void Range_Tree::Node::print_node(int offset)
-{
-    for(int i = 0; i < offset; i++)
-        cout << "    ";
-    cout << "value " << _value.first << " width " << _value.second << " height " << _height << endl;
-    if(_left == NULL)
-    {
-        for(int i = 0; i < offset+1; i++)
-            cout << "    ";
-        cout << "NULL" << endl;
-    }
-    else
-        _left->print_node(offset+1);
-    if(_right == NULL)
-    {
-        for(int i = 0; i < offset+1; i++)
-            cout << "    ";
-        cout << "NULL" << endl;
-    }
-    else
-        _right->print_node(offset+1);
-}
+//void AVL_Tree::Node::print_node(int offset)
+//{
+//    for(int i = 0; i < offset; i++)
+//        cout << "    ";
+//    cout << "value " << _value.first << " width " << _value.second << " height " << _height << endl;
+//    if(_left == NULL)
+//    {
+//        for(int i = 0; i < offset+1; i++)
+//            cout << "    ";
+//        cout << "NULL" << endl;
+//    }
+//    else
+//        _left->print_node(offset+1);
+//    if(_right == NULL)
+//    {
+//        for(int i = 0; i < offset+1; i++)
+//            cout << "    ";
+//        cout << "NULL" << endl;
+//    }
+//    else
+//        _right->print_node(offset+1);
+//}
