@@ -8,18 +8,18 @@ QT       += testlib
 
 QT       -= gui
 
-TARGET = tst_rtreetest
+TARGET = tst_avltree
 CONFIG   += console
 CONFIG   -= app_bundle
 
-#QMAKE_CXXFLAGS += -Wall -Werror
+QMAKE_CXXFLAGS += -Wall -Werror
 
 TEMPLATE = app
 
 
 SOURCES += \
     interval.cpp \
-    tst_rtreetest.cpp
+    tst_avltree.cpp
 DEFINES += SRCDIR=\\\"$$PWD/\\\"
 
 HEADERS += \

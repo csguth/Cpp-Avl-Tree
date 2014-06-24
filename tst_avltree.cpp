@@ -10,12 +10,12 @@ using std::random_shuffle;
 
 #include "interval.h"
 
-class RtreeTest : public QObject
+class AVL_Tree_Test : public QObject
 {
     Q_OBJECT
 
 public:
-    RtreeTest();
+    AVL_Tree_Test();
 private:
 private Q_SLOTS:
     void CreateAValidInterval();
@@ -49,13 +49,13 @@ private Q_SLOTS:
     void removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach();
 };
 
-RtreeTest::RtreeTest()
+AVL_Tree_Test::AVL_Tree_Test()
 {
 }
 
 
 
-void RtreeTest::checkNumberOfNodes()
+void AVL_Tree_Test::checkNumberOfNodes()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.empty());
@@ -63,7 +63,7 @@ void RtreeTest::checkNumberOfNodes()
     QVERIFY(rtree.size() == 1);
 }
 
-void RtreeTest::checkRoot()
+void AVL_Tree_Test::checkRoot()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval root(100, 300);
@@ -71,7 +71,7 @@ void RtreeTest::checkRoot()
     QVERIFY(rtree.root() == root);
 }
 
-void RtreeTest::insertLessThanRootWithoutOverlap()
+void AVL_Tree_Test::insertLessThanRootWithoutOverlap()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.insert(NonOverlappingInterval(100, 300)));
@@ -79,7 +79,7 @@ void RtreeTest::insertLessThanRootWithoutOverlap()
     QVERIFY(rtree.size() == 2);
 }
 
-void RtreeTest::insertLessThanRootWithOverlap()
+void AVL_Tree_Test::insertLessThanRootWithOverlap()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.insert(NonOverlappingInterval(100, 300)));
@@ -87,7 +87,7 @@ void RtreeTest::insertLessThanRootWithOverlap()
     QVERIFY(rtree.size() == 1);
 }
 
-void RtreeTest::insertGreatherThanRootWithoutOverlap()
+void AVL_Tree_Test::insertGreatherThanRootWithoutOverlap()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.insert(NonOverlappingInterval(100, 300)));
@@ -95,7 +95,7 @@ void RtreeTest::insertGreatherThanRootWithoutOverlap()
     QVERIFY(rtree.size() == 2);
 }
 
-void RtreeTest::insertGreaterThanRootWithOverlap()
+void AVL_Tree_Test::insertGreaterThanRootWithOverlap()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.insert(NonOverlappingInterval(100, 300)));
@@ -103,27 +103,27 @@ void RtreeTest::insertGreaterThanRootWithOverlap()
     QVERIFY(rtree.size() == 1);
 }
 
-void RtreeTest::checkIfRangeCanBeInsertedBeforeRoot()
+void AVL_Tree_Test::checkIfRangeCanBeInsertedBeforeRoot()
 {
     AVL_Tree<NonOverlappingInterval> rtree ;
     QVERIFY(rtree.insert(NonOverlappingInterval(100, 300)));
     QVERIFY(rtree.find(NonOverlappingInterval(50, 49)).sameAs(NonOverlappingInterval::invalid()));
 }
 
-void RtreeTest::checkIfRangeCanBeInsertedAfterRoot()
+void AVL_Tree_Test::checkIfRangeCanBeInsertedAfterRoot()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     rtree.insert(NonOverlappingInterval(100, 300));
 }
 
-void RtreeTest::checkIfRangeCannotBeInsertedBeforeRoot()
+void AVL_Tree_Test::checkIfRangeCannotBeInsertedBeforeRoot()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     rtree.insert(NonOverlappingInterval(100, 300));
     QVERIFY(rtree.find(NonOverlappingInterval(50, 100)).sameAs(NonOverlappingInterval(100, 300)));
 }
 
-void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
+void AVL_Tree_Test::checkIfRangeCannotBeInsertedAfterRoot()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     rtree.insert(NonOverlappingInterval(100, 300));
@@ -131,7 +131,7 @@ void RtreeTest::checkIfRangeCannotBeInsertedAfterRoot()
 }
 
 
-void RtreeTest::rootChangeWithLeftRotation()
+void AVL_Tree_Test::rootChangeWithLeftRotation()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -148,7 +148,7 @@ void RtreeTest::rootChangeWithLeftRotation()
     QVERIFY(rtree.root().sameAs(b));
 }
 
-void RtreeTest::rootChangeWithRightRotation()
+void AVL_Tree_Test::rootChangeWithRightRotation()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -165,7 +165,7 @@ void RtreeTest::rootChangeWithRightRotation()
     QVERIFY(rtree.root().sameAs(c));
 }
 
-void RtreeTest::rootChangeWithDoubleLeftRotation()
+void AVL_Tree_Test::rootChangeWithDoubleLeftRotation()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -180,7 +180,7 @@ void RtreeTest::rootChangeWithDoubleLeftRotation()
     QVERIFY(rtree.root().sameAs(b));
 }
 
-void RtreeTest::rootChangeWithDoubleRightRotation()
+void AVL_Tree_Test::rootChangeWithDoubleRightRotation()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -194,7 +194,7 @@ void RtreeTest::rootChangeWithDoubleRightRotation()
     QVERIFY(rtree.root().sameAs(b));
 }
 
-void RtreeTest::insertZeroToSix()
+void AVL_Tree_Test::insertZeroToSix()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -222,7 +222,7 @@ void RtreeTest::insertZeroToSix()
 
 
 
-void RtreeTest::CreateAValidInterval()
+void AVL_Tree_Test::CreateAValidInterval()
 {
     const NonOverlappingInterval interval(120, 10);
     QVERIFY(interval.begin() == 120);
@@ -231,7 +231,7 @@ void RtreeTest::CreateAValidInterval()
     QVERIFY(interval.valid());
 }
 
-void RtreeTest::CompareTwoIntervals()
+void AVL_Tree_Test::CompareTwoIntervals()
 {
     const NonOverlappingInterval a(120, 10);
     const NonOverlappingInterval b(140, 10);
@@ -241,7 +241,7 @@ void RtreeTest::CompareTwoIntervals()
 }
 
 
-void RtreeTest::findingAValue()
+void AVL_Tree_Test::findingAValue()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -262,14 +262,14 @@ void RtreeTest::findingAValue()
 }
 
 
-void RtreeTest::checkRootOfAnEmptyTree()
+void AVL_Tree_Test::checkRootOfAnEmptyTree()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.root().sameAs(NonOverlappingInterval::invalid()));
 }
 
 
-void RtreeTest::findExistentElement()
+void AVL_Tree_Test::findExistentElement()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -284,7 +284,7 @@ void RtreeTest::findExistentElement()
     QVERIFY(result.sameAs(d));
 }
 
-void RtreeTest::findInexistentElement()
+void AVL_Tree_Test::findInexistentElement()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -297,7 +297,7 @@ void RtreeTest::findInexistentElement()
     QVERIFY(result.sameAs(NonOverlappingInterval::invalid()));
 }
 int myrandom (int i) { return std::rand()%i;}
-void RtreeTest::insert1000NonSortedElementsAndFindOne()
+void AVL_Tree_Test::insert1000NonSortedElementsAndFindOne()
 {
     std::srand (0);
     std::vector<std::pair<int, unsigned> > mySet;
@@ -312,7 +312,7 @@ void RtreeTest::insert1000NonSortedElementsAndFindOne()
     QVERIFY(result.sameAs(NonOverlappingInterval(50, 5)));
 }
 
-void RtreeTest::insert1000SortedElementsAndFindOne()
+void AVL_Tree_Test::insert1000SortedElementsAndFindOne()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     for(unsigned i = 0; i < 1000; i++)
@@ -322,7 +322,7 @@ void RtreeTest::insert1000SortedElementsAndFindOne()
     QVERIFY(result.sameAs(NonOverlappingInterval(50, 5)));
 }
 
-void RtreeTest::removeFromAEmptyTree()
+void AVL_Tree_Test::removeFromAEmptyTree()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval value_removed = rtree.remove(NonOverlappingInterval(10, 1));
@@ -330,7 +330,7 @@ void RtreeTest::removeFromAEmptyTree()
     QVERIFY(value_removed.sameAs(NonOverlappingInterval::invalid()));
 }
 
-void RtreeTest::removeRootFromATreeWithASingleElement()
+void AVL_Tree_Test::removeRootFromATreeWithASingleElement()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     QVERIFY(rtree.insert(NonOverlappingInterval(10, 300)));
@@ -339,7 +339,7 @@ void RtreeTest::removeRootFromATreeWithASingleElement()
     QVERIFY(value_removed.sameAs(NonOverlappingInterval(10, 300)));
 }
 
-void RtreeTest::removeTheBiggestFromATreeWithTwoElements()
+void AVL_Tree_Test::removeTheBiggestFromATreeWithTwoElements()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -353,7 +353,7 @@ void RtreeTest::removeTheBiggestFromATreeWithTwoElements()
     QVERIFY(rtree.root().sameAs(a));
 }
 
-void RtreeTest::removeTheSmallestFromATreeWithTwoElements()
+void AVL_Tree_Test::removeTheSmallestFromATreeWithTwoElements()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(0, 9);
@@ -367,7 +367,7 @@ void RtreeTest::removeTheSmallestFromATreeWithTwoElements()
     QVERIFY(rtree.root().sameAs(b));
 }
 
-void RtreeTest::removeTheRootFromATreeWithThreeElements()
+void AVL_Tree_Test::removeTheRootFromATreeWithThreeElements()
 {
     AVL_Tree<NonOverlappingInterval> rtree ;
     NonOverlappingInterval a(0, 9);
@@ -384,7 +384,7 @@ void RtreeTest::removeTheRootFromATreeWithThreeElements()
     QVERIFY(rtree.find(NonOverlappingInterval(5, 2)).sameAs(a));
 }
 
-void RtreeTest::removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach()
+void AVL_Tree_Test::removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach()
 {
     AVL_Tree<NonOverlappingInterval> rtree;
     NonOverlappingInterval a(4000, 50);
@@ -415,7 +415,7 @@ void RtreeTest::removeTheRootFromATreeWithTwoSubtreesWithThreeElementsEach()
 
 
 
-QTEST_APPLESS_MAIN(RtreeTest)
+QTEST_APPLESS_MAIN(AVL_Tree_Test)
 
-#include "tst_rtreetest.moc"
+#include "tst_avltree.moc"
 
